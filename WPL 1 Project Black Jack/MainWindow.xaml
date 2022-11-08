@@ -21,7 +21,7 @@
         </Grid.RowDefinitions>
         
         <Border Grid.ColumnSpan="3" BorderThickness="0,0,0,1" BorderBrush="Black">
-            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="♠ Let's play Blackjack ♣" FontSize="22" FontWeight="Bold"></TextBlock>
+            <TextBlock x:Name="TxbResultaat" VerticalAlignment="Center" HorizontalAlignment="Center" Text="♠ Let's play Blackjack ♣" FontSize="22" FontWeight="Bold"></TextBlock>
         </Border>
         
         <WrapPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -29,7 +29,7 @@
             <TextBlock x:Name="TxbTotaalBank" Margin="10 0" Text="0" FontWeight="Bold"></TextBlock>
         </WrapPanel>
 
-        <TextBox x:Name="TxbKaartenBank" Grid.Row="1" Grid.Column="1"  Margin="10" ></TextBox>
+        <TextBox x:Name="TbxKaartenBank" Grid.Row="1" Grid.Column="1"  Margin="10" ></TextBox>
 
         <WrapPanel Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center">
             <TextBlock Text="Speler:" FontWeight="Bold"></TextBlock>
@@ -38,8 +38,8 @@
 
         <TextBox x:Name="TbxKaartenSpeler" Grid.Row="2" Grid.Column="1"  Margin="10" ></TextBox>
 
-        <Button x:Name="BtnHit" Grid.Column="0" Grid.Row="3" Margin="40" Content="Hit" IsEnabled="False" FontWeight="Bold" Background="#FF039FC8"></Button>
-        <Button x:Name="BtnDeel" Grid.Column="1" Grid.Row="3" Margin="40" Content="Deel" FontWeight="Bold"></Button>
+        <Button x:Name="BtnHit" Grid.Column="0" Grid.Row="3" Margin="40" Content="Hit" IsEnabled="False" FontWeight="Bold"></Button>
+        <Button x:Name="BtnDeel" Grid.Column="1" Grid.Row="3" Margin="40" Content="Deel" FontWeight="Bold" Click="BtnDeel_Click"></Button>
         <Button x:Name="BtnStand" Grid.Column="2" Grid.Row="3" Margin="40" Content="Stand" IsEnabled="False" FontWeight="Bold"></Button>
     </Grid>
 </Window>
