@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPL_1_Project_Black_Jack"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Blackjack" Height="450" Width="800">
     <Grid Background="#FF039FC8">
         <Grid.ColumnDefinitions>
             <ColumnDefinition></ColumnDefinition>
