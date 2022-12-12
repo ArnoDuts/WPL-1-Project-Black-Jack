@@ -96,6 +96,7 @@ namespace WPL_1_Project_Black_Jack
                 TbxKaartenBank.Text = soort + " " + kaarten[index];
             }
             
+
         }
 
         
