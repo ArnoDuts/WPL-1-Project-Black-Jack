@@ -36,7 +36,8 @@ namespace WPL_1_Project_Black_Jack
         int kaartsoorten = 1;
         List<int> totaalSpeler = new List<int>();
         List<int> totaalBank = new List<int>();
-        
+        int kapitaal = 0;
+        int inzet = 0;
         public string GeefKaart(Boolean isSpeler)
         {
             kaartsoorten = deelkaarten.Next(1, 4);
@@ -92,17 +93,17 @@ namespace WPL_1_Project_Black_Jack
         {
             
             BtnDeel.IsEnabled = false;
+            inzet = Convert.ToInt32(txbInzet.Text);
             BtnHit.IsEnabled = true;
             BtnStand.IsEnabled = true;
+            txbInzet.IsEnabled = false;
             TxbResultaat.Text = "♠ Let's play Blackjack ♣";
             TbxKaartenSpeler.Text = "";
             TbxKaartenBank.Text = "";
-            TxbTotaalBank.Text = "";
-            TxbTotaalSpeler.Text = "";
-            
-
-
-
+            TxbTotaalBank.Text = "0";
+            TxbTotaalSpeler.Text = "0";
+            totaalBank.Clear();
+            totaalSpeler.Clear();
 
             for (int i = 0; i < AantalKaarten; i++)
             {
@@ -131,14 +132,7 @@ namespace WPL_1_Project_Black_Jack
                 BtnHit.IsEnabled = false;
                 BtnStand.IsEnabled = false;
             }
-            //if(Convert.ToInt32(TxbTotaalBank.Text) > 21)
-            //{
-            //    TxbResultaat.Text = "Gewonnen";
-            //    TxbResultaat.Foreground = Brushes.Green;
-            //    BtnDeel.IsEnabled = true;
-            //    BtnHit.IsEnabled = false;
-            //    BtnStand.IsEnabled = false;
-            //}
+            
             if (Convert.ToInt32(TxbTotaalSpeler.Text) == 21)
             {
                 TxbResultaat.Text = "Blackjack!";
@@ -168,8 +162,10 @@ namespace WPL_1_Project_Black_Jack
                 BtnDeel.IsEnabled = true;
                 BtnHit.IsEnabled = false;
                 BtnStand.IsEnabled = false;
-                
-                
+                txbKapitaal.Text = Convert.ToString(kapitaal + inzet * 2);
+                txbInzet.IsEnabled = true;
+
+
             }
             if (Convert.ToInt32(TxbTotaalBank.Text) < Convert.ToInt32(TxbTotaalSpeler.Text))
             {
@@ -178,8 +174,9 @@ namespace WPL_1_Project_Black_Jack
                 BtnDeel.IsEnabled = true;
                 BtnHit.IsEnabled = false;
                 BtnStand.IsEnabled = false;
+                txbKapitaal.Text = Convert.ToString(kapitaal + inzet * 2);
+                txbInzet.IsEnabled = true;
 
-                
             }
             if (Convert.ToInt32(TxbTotaalBank.Text) > Convert.ToInt32(TxbTotaalSpeler.Text) && Convert.ToInt32(TxbTotaalBank.Text) > 21)
             {
@@ -188,6 +185,8 @@ namespace WPL_1_Project_Black_Jack
                 BtnDeel.IsEnabled = true;
                 BtnHit.IsEnabled = false;
                 BtnStand.IsEnabled = false;
+                txbKapitaal.Text = Convert.ToString(kapitaal + inzet * 2);
+                txbInzet.IsEnabled = true;
             }
             else
             {
@@ -196,11 +195,34 @@ namespace WPL_1_Project_Black_Jack
                 BtnDeel.IsEnabled = true;
                 BtnHit.IsEnabled = false;
                 BtnStand.IsEnabled = false;
-                
+                txbKapitaal.Text = Convert.ToString(kapitaal - inzet);
+                txbInzet.IsEnabled = true;
+
+            }
+            if (kapitaal == 0)
+            {
+                BtnDeel.IsEnabled = false;
+                BtnHit.IsEnabled = false;
+                BtnStand.IsEnabled = false;
+                MessageBox.Show("U kan het spel niet verder spelen! Start een nieuw spel");
             }
             
         }
 
-        
+        private void btnNieuwSpel_Click(object sender, RoutedEventArgs e)
+        {
+            kapitaal = 100;
+            txbKapitaal.Text = Convert.ToString(kapitaal);
+            
+            BtnDeel.IsEnabled = true;
+            BtnHit.IsEnabled = false;
+            BtnStand.IsEnabled = false;
+            TxbResultaat.Text = "♠ Let's play Blackjack ♣";
+            TbxKaartenSpeler.Text = "";
+            TbxKaartenBank.Text = "";
+            TxbTotaalBank.Text = "0";
+            TxbTotaalSpeler.Text = "0";
+        }
+
     }
 }
