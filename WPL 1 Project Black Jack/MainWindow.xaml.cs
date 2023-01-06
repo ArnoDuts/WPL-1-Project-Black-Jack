@@ -36,6 +36,7 @@ namespace WPL_1_Project_Black_Jack
         int kaartsoorten = 1;
         List<int> totaalSpeler = new List<int>();
         List<int> totaalBank = new List<int>();
+        
         public string GeefKaart(Boolean isSpeler)
         {
             kaartsoorten = deelkaarten.Next(1, 4);
@@ -89,16 +90,18 @@ namespace WPL_1_Project_Black_Jack
 
         private void BtnDeel_Click(object sender, RoutedEventArgs e)
         {
-          
+            
             BtnDeel.IsEnabled = false;
             BtnHit.IsEnabled = true;
             BtnStand.IsEnabled = true;
             TxbResultaat.Text = "♠ Let's play Blackjack ♣";
             TbxKaartenSpeler.Text = "";
             TbxKaartenBank.Text = "";
+            TxbTotaalBank.Text = "";
+            TxbTotaalSpeler.Text = "";
+            
 
-            
-            
+
 
 
             for (int i = 0; i < AantalKaarten; i++)
@@ -124,43 +127,80 @@ namespace WPL_1_Project_Black_Jack
             {
                 TxbResultaat.Text = "Verloren";
                 TxbResultaat.Foreground = Brushes.Red;
+                BtnDeel.IsEnabled = true;
+                BtnHit.IsEnabled = false;
+                BtnStand.IsEnabled = false;
             }
-            if(Convert.ToInt32(TxbTotaalBank.Text) > 21)
-            {
-                TxbResultaat.Text = "Gewonnen";
-                TxbResultaat.Foreground = Brushes.Green;
-            }
+            //if(Convert.ToInt32(TxbTotaalBank.Text) > 21)
+            //{
+            //    TxbResultaat.Text = "Gewonnen";
+            //    TxbResultaat.Foreground = Brushes.Green;
+            //    BtnDeel.IsEnabled = true;
+            //    BtnHit.IsEnabled = false;
+            //    BtnStand.IsEnabled = false;
+            //}
             if (Convert.ToInt32(TxbTotaalSpeler.Text) == 21)
             {
                 TxbResultaat.Text = "Blackjack!";
                 TxbResultaat.Foreground = Brushes.Green;
+                BtnDeel.IsEnabled = true;
+                BtnHit.IsEnabled = false;
+                BtnStand.IsEnabled = false;
             }
             
         }
 
         private void BtnStand_Click(object sender, RoutedEventArgs e)
         {
-            TbxKaartenBank.Text += GeefKaart(false);
+            
 
-            if (Convert.ToInt32(TxbTotaalBank.Text) >= 17)
+
+            while (Convert.ToInt32(TxbTotaalBank.Text) <= 17)
             {
-                if(Convert.ToInt32(TxbTotaalBank.Text) > 21)
-                {
-                    TxbResultaat.Text = "Gewonnen";
-                    TxbResultaat.Foreground = Brushes.Green;
-                }
-                if(Convert.ToInt32(TxbTotaalBank.Text) < Convert.ToInt32(TxbTotaalSpeler.Text))
-                {
-                    TxbResultaat.Text = "Gewonnen";
-                    TxbResultaat.Foreground = Brushes.Green;
-                }
-                else
-                {
-                    TxbResultaat.Text = "Verloren";
-                    TxbResultaat.Foreground = Brushes.Red;
-                }
+                TbxKaartenBank.Text += GeefKaart(false);
+
+                
+            }
+            if (Convert.ToInt32(TxbTotaalBank.Text) > 21)
+            {
+                TxbResultaat.Text = "Gewonnen";
+                TxbResultaat.Foreground = Brushes.Green;
+                BtnDeel.IsEnabled = true;
+                BtnHit.IsEnabled = false;
+                BtnStand.IsEnabled = false;
+                
+                
+            }
+            if (Convert.ToInt32(TxbTotaalBank.Text) < Convert.ToInt32(TxbTotaalSpeler.Text))
+            {
+                TxbResultaat.Text = "Gewonnen";
+                TxbResultaat.Foreground = Brushes.Green;
+                BtnDeel.IsEnabled = true;
+                BtnHit.IsEnabled = false;
+                BtnStand.IsEnabled = false;
+
+                
+            }
+            if (Convert.ToInt32(TxbTotaalBank.Text) > Convert.ToInt32(TxbTotaalSpeler.Text) && Convert.ToInt32(TxbTotaalBank.Text) > 21)
+            {
+                TxbResultaat.Text = "Gewonnen";
+                TxbResultaat.Foreground = Brushes.Green;
+                BtnDeel.IsEnabled = true;
+                BtnHit.IsEnabled = false;
+                BtnStand.IsEnabled = false;
+            }
+            else
+            {
+                TxbResultaat.Text = "Verloren";
+                TxbResultaat.Foreground = Brushes.Red;
+                BtnDeel.IsEnabled = true;
+                BtnHit.IsEnabled = false;
+                BtnStand.IsEnabled = false;
+                
             }
             
         }
+
+        
     }
 }

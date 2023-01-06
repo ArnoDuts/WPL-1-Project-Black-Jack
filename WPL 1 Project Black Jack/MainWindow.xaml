@@ -20,8 +20,9 @@
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
         
+        <TextBlock Grid.Column="1" x:Name="TxbResultaat" VerticalAlignment="Center" HorizontalAlignment="Center" Text="♠ Let's play Blackjack ♣" FontSize="22" FontWeight="Bold"></TextBlock>
         <Border Grid.ColumnSpan="3" BorderThickness="0,0,0,1" BorderBrush="Black">
-            <TextBlock x:Name="TxbResultaat" VerticalAlignment="Center" HorizontalAlignment="Center" Text="♠ Let's play Blackjack ♣" FontSize="22" FontWeight="Bold"></TextBlock>
+            
         </Border>
         
         <WrapPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
