@@ -30,7 +30,7 @@ namespace WPL_1_Project_Black_Jack
         int AantalKaarten = 2;
         readonly List<string> kaarten = new List<string>()
             {
-            "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Boer", "Dame", "Koning"
+            "Aas", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Boer", "Dame", "Koning"
             };
         string soort = null;
         int kaartsoorten = 1;
@@ -65,11 +65,15 @@ namespace WPL_1_Project_Black_Jack
                 {
                     totaalSpeler.Add(10);
                 }
+                else if (kaarten[index] == "Aas")
+                {
+                    totaalSpeler.Add(11);
+                }
                 else
                 {
-                    totaalSpeler.Add(Convert.ToInt32(kaarten[index]));
+                    totaalSpeler.Add(int.Parse(kaarten[index]));
                 }
-                TxbTotaalSpeler.Text = Convert.ToString(totaalSpeler.Sum());
+                TxbTotaalSpeler.Text = totaalSpeler.Sum().ToString();
             }
             if (isSpeler == false)
             {
@@ -77,11 +81,15 @@ namespace WPL_1_Project_Black_Jack
                 {
                     totaalBank.Add(10);
                 }
+                else if (kaarten[index] == "Aas")
+                {
+                    totaalBank.Add(11);
+                }
                 else
                 {
-                    totaalBank.Add(Convert.ToInt32(kaarten[index]));
+                    totaalBank.Add(int.Parse(kaarten[index]));
                 }
-                TxbTotaalBank.Text = Convert.ToString(totaalBank.Sum());
+                TxbTotaalBank.Text = totaalBank.Sum().ToString();
             }
             
             return soort + " " + kaarten[index] + "\r";
@@ -89,42 +97,63 @@ namespace WPL_1_Project_Black_Jack
 
         
 
-        private void BtnDeel_Click(object sender, RoutedEventArgs e)
+        private async void BtnDeel_Click(object sender, RoutedEventArgs e)
         {
-            
+            ClearGame();
             BtnDeel.IsEnabled = false;
-            inzet = Convert.ToInt32(txbInzet.Text);
+            inzet = int.Parse(txbInzet.Text);
             BtnHit.IsEnabled = true;
             BtnStand.IsEnabled = true;
             txbInzet.IsEnabled = false;
             TxbResultaat.Text = "♠ Let's play Blackjack ♣";
-            TbxKaartenSpeler.Text = "";
-            TbxKaartenBank.Text = "";
-            TxbTotaalBank.Text = "0";
-            TxbTotaalSpeler.Text = "0";
-            totaalBank.Clear();
-            totaalSpeler.Clear();
+            TxbResultaat.Foreground = Brushes.Black;
+            
+            
 
+            if (inzet > int.Parse(txbKapitaal.Text))
+            {
+                MessageBox.Show("Uw inzet is groter dan uw kapitaal. Probeer het opnieuw!");
+                ClearGame();
+                BtnDeel.IsEnabled = true;
+                BtnHit.IsEnabled = false;
+                BtnStand.IsEnabled = false;
+                txbInzet.IsEnabled = true;
+
+            }
+            else if (inzet < (int.Parse(txbKapitaal.Text)/100) * 10)
+            {
+                MessageBox.Show("Uw inzet moet 10% van het huidige kapitaal zijn! Probeer het opnieuw!");
+                ClearGame();
+                BtnDeel.IsEnabled = true;
+                BtnHit.IsEnabled = false;
+                BtnStand.IsEnabled = false;
+                txbInzet.IsEnabled = true;
+            }
+
+            AantalKaarten = 2;
             for (int i = 0; i < AantalKaarten; i++)
             {
-                
+
                 TbxKaartenSpeler.Text += GeefKaart(true);
+                await Task.Delay(1000);
             }
-            
+
             AantalKaarten = 1;
             for (int i = 0; i < AantalKaarten; i++)
             {
 
                 TbxKaartenBank.Text += GeefKaart(false);
             }
-            
+
+
+
 
         }
 
         private void BtnHit_Click(object sender, RoutedEventArgs e)
         {
             TbxKaartenSpeler.Text+= GeefKaart(true);
-            if (Convert.ToInt32(TxbTotaalSpeler.Text) > 21)
+            if (int.Parse(TxbTotaalSpeler.Text) > 21)
             {
                 TxbResultaat.Text = "Verloren";
                 TxbResultaat.Foreground = Brushes.Red;
@@ -132,60 +161,75 @@ namespace WPL_1_Project_Black_Jack
                 BtnHit.IsEnabled = false;
                 BtnStand.IsEnabled = false;
             }
-            
-            if (Convert.ToInt32(TxbTotaalSpeler.Text) == 21)
+            else if (int.Parse(TxbTotaalSpeler.Text) > 21 && TxbResultaat.Text.Contains("Aas"))
+            {
+                TxbTotaalSpeler.Text = (int.Parse(TxbTotaalSpeler.Text) - 10).ToString();
+            }
+            else if (int.Parse(TxbTotaalSpeler.Text) == 21)
             {
                 TxbResultaat.Text = "Blackjack!";
                 TxbResultaat.Foreground = Brushes.Green;
                 BtnDeel.IsEnabled = true;
                 BtnHit.IsEnabled = false;
                 BtnStand.IsEnabled = false;
+                txbKapitaal.Text = (int.Parse(txbKapitaal.Text) + (inzet * 2)).ToString();
             }
             
         }
 
-        private void BtnStand_Click(object sender, RoutedEventArgs e)
+        private async void BtnStand_Click(object sender, RoutedEventArgs e)
         {
             
 
 
-            while (Convert.ToInt32(TxbTotaalBank.Text) <= 17)
+            while (int.Parse(TxbTotaalBank.Text) <= 17)
             {
                 TbxKaartenBank.Text += GeefKaart(false);
+                await Task.Delay(1000);
 
-                
             }
-            if (Convert.ToInt32(TxbTotaalBank.Text) > 21)
+
+            
+            if (int.Parse(TxbTotaalBank.Text) > 21)
             {
                 TxbResultaat.Text = "Gewonnen";
                 TxbResultaat.Foreground = Brushes.Green;
                 BtnDeel.IsEnabled = true;
                 BtnHit.IsEnabled = false;
                 BtnStand.IsEnabled = false;
-                txbKapitaal.Text = Convert.ToString(kapitaal + inzet * 2);
+                txbKapitaal.Text = (int.Parse(txbKapitaal.Text) + (inzet * 2)).ToString();
                 txbInzet.IsEnabled = true;
 
 
             }
-            if (Convert.ToInt32(TxbTotaalBank.Text) < Convert.ToInt32(TxbTotaalSpeler.Text))
+            else if (int.Parse(TxbTotaalBank.Text) < int.Parse(TxbTotaalSpeler.Text))
             {
                 TxbResultaat.Text = "Gewonnen";
                 TxbResultaat.Foreground = Brushes.Green;
                 BtnDeel.IsEnabled = true;
                 BtnHit.IsEnabled = false;
                 BtnStand.IsEnabled = false;
-                txbKapitaal.Text = Convert.ToString(kapitaal + inzet * 2);
+                txbKapitaal.Text = (int.Parse(txbKapitaal.Text) + (inzet * 2)).ToString();
                 txbInzet.IsEnabled = true;
 
             }
-            if (Convert.ToInt32(TxbTotaalBank.Text) > Convert.ToInt32(TxbTotaalSpeler.Text) && Convert.ToInt32(TxbTotaalBank.Text) > 21)
+            else if (int.Parse(TxbTotaalBank.Text) > int.Parse(TxbTotaalSpeler.Text) && int.Parse(TxbTotaalBank.Text) > 21)
             {
                 TxbResultaat.Text = "Gewonnen";
                 TxbResultaat.Foreground = Brushes.Green;
                 BtnDeel.IsEnabled = true;
                 BtnHit.IsEnabled = false;
                 BtnStand.IsEnabled = false;
-                txbKapitaal.Text = Convert.ToString(kapitaal + inzet * 2);
+                txbKapitaal.Text = (int.Parse(txbKapitaal.Text) + (inzet * 2)).ToString();
+                txbInzet.IsEnabled = true;
+            }
+            else if (int.Parse(TxbTotaalBank.Text) == int.Parse(TxbTotaalSpeler.Text))
+            {
+                TxbResultaat.Text = "Push";
+                BtnDeel.IsEnabled = true;
+                BtnHit.IsEnabled = false;
+                BtnStand.IsEnabled = false;
+                txbKapitaal.Text = (int.Parse(txbKapitaal.Text) + inzet).ToString();
                 txbInzet.IsEnabled = true;
             }
             else
@@ -195,10 +239,11 @@ namespace WPL_1_Project_Black_Jack
                 BtnDeel.IsEnabled = true;
                 BtnHit.IsEnabled = false;
                 BtnStand.IsEnabled = false;
-                txbKapitaal.Text = Convert.ToString(kapitaal - inzet);
+                txbKapitaal.Text =(int.Parse(txbKapitaal.Text) - inzet).ToString();
                 txbInzet.IsEnabled = true;
 
             }
+
             if (kapitaal == 0)
             {
                 BtnDeel.IsEnabled = false;
@@ -212,17 +257,27 @@ namespace WPL_1_Project_Black_Jack
         private void btnNieuwSpel_Click(object sender, RoutedEventArgs e)
         {
             kapitaal = 100;
-            txbKapitaal.Text = Convert.ToString(kapitaal);
-            
+            txbKapitaal.Text = kapitaal.ToString();
+            TxbResultaat.Foreground = Brushes.Black;
             BtnDeel.IsEnabled = true;
             BtnHit.IsEnabled = false;
             BtnStand.IsEnabled = false;
+            ClearGame();
+            txbInzet.IsEnabled = true;
+            
+        }
+
+        private void ClearGame ()
+        {
             TxbResultaat.Text = "♠ Let's play Blackjack ♣";
             TbxKaartenSpeler.Text = "";
             TbxKaartenBank.Text = "";
+            totaalBank.Clear();
+            totaalSpeler.Clear();
             TxbTotaalBank.Text = "0";
             TxbTotaalSpeler.Text = "0";
         }
 
+        
     }
 }
