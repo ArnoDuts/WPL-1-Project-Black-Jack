@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace WPL_1_Project_Black_Jack
 {
@@ -25,8 +26,9 @@ namespace WPL_1_Project_Black_Jack
         public MainWindow()
         {
             InitializeComponent();
-            DateTime vandaag = DateTime.Now;
-            lblTimer.Content = vandaag.ToLongTimeString();
+            //DateTime vandaag = DateTime.Now;
+            //lblTimer.Content = vandaag.ToLongTimeString();
+            Timer();
         }
 
         Random deelkaarten = new Random();
@@ -37,6 +39,19 @@ namespace WPL_1_Project_Black_Jack
         int inzet = 0;
         List<string> nieuwDeck = new List<string>();
         int Deck = 52;
+
+        private void Timer()
+        {
+            DispatcherTimer timer = new DispatcherTimer();
+            timer.Interval = new TimeSpan(0, 0, 1);
+            timer.Tick += Timer_Tick;
+            timer.Start();
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            lblTimer.Content = DateTime.Now.ToString("HH:mm:ss");
+        }
 
         private List<string> DeckVullen()
         {
@@ -132,6 +147,7 @@ namespace WPL_1_Project_Black_Jack
             txbInzet.IsEnabled = false;
             TxbResultaat.Text = "♠ Let's play Blackjack ♣";
             TxbResultaat.Foreground = Brushes.Black;
+            btnNieuwSpel.IsEnabled = false;
 
             if (inzet > int.Parse(txbKapitaal.Text))
             {
@@ -151,6 +167,7 @@ namespace WPL_1_Project_Black_Jack
                 BtnHit.IsEnabled = false;
                 BtnStand.IsEnabled = false;
                 txbInzet.IsEnabled = true;
+                return;
             }
 
             AantalKaarten = 2;
@@ -168,6 +185,7 @@ namespace WPL_1_Project_Black_Jack
                 GeefKaart(false);
             }
 
+            btnNieuwSpel.IsEnabled = true;
         }
 
         private void BtnHit_Click(object sender, RoutedEventArgs e)
@@ -204,7 +222,7 @@ namespace WPL_1_Project_Black_Jack
         {
             ResultaatChecker();
             BtnDoubleDown.IsEnabled = false;
-
+            BtnStand.IsEnabled = false;
         }
 
         private void btnNieuwSpel_Click(object sender, RoutedEventArgs e)
