@@ -181,7 +181,6 @@ namespace WPL_1_Project_Black_Jack
         {
             
 
-
             while (int.Parse(TxbTotaalBank.Text) <= 17)
             {
                 TbxKaartenBank.Text += GeefKaart(false);
