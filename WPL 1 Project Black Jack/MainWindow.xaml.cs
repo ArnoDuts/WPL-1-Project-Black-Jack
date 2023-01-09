@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -24,58 +25,68 @@ namespace WPL_1_Project_Black_Jack
         public MainWindow()
         {
             InitializeComponent();
+            DateTime vandaag = DateTime.Now;
+            lblTimer.Content= vandaag.ToLongTimeString();
         }
         
         Random deelkaarten = new Random();
         int AantalKaarten = 2;
-        readonly List<string> kaarten = new List<string>()
-            {
-            "Aas", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Boer", "Dame", "Koning"
-            };
-        string soort = null;
-        int kaartsoorten = 1;
         List<int> totaalSpeler = new List<int>();
         List<int> totaalBank = new List<int>();
         int kapitaal = 0;
         int inzet = 0;
         List<string> nieuwDeck = new List<string>();
-        int kaartenInDeck = 52;
+        int Deck = 52;
 
         private List<string> DeckVullen()
         {
             List<string> kaarten = new List<string>();
-            string[] kaartSoorten = {"Spades","Clubs","Hearts","Diamonds"};
+            string[] kaartSoorts = {"Diamonds","Clubs","Spades","Hearts"};
             string[] kaartWaardes = {"2","3","4","5","6","7","8","9","10","Ace","Jack","Queen","King" };
             foreach (string kaartWaarde in kaartWaardes)
             {
-                foreach (string kaartSoort in kaartSoorten)
+                foreach (string kaartSoort in kaartSoorts)
                 {
-                    kaarten.Add(kaartWaarde.ToLower()+ "_of_" + kaartSoort.ToLower() + ".png");
+                    kaarten.Add(kaartWaarde.ToLower()+ "_of_" + kaartSoort.ToLower()+ ".png");
                 }
             }
             return kaarten;
         }
 
-        public string GeefKaart(Boolean isSpeler)
+        public string GeefKaart(bool isSpeler)
         {
+            
             if (nieuwDeck.Count < 1)
             {
                 nieuwDeck = DeckVullen();
             }
             string kaart = nieuwDeck[deelkaarten.Next(nieuwDeck.Count)];
 
-            Image image = new Image();
-            image.Source = new BitmapImage(new Uri($"Images/{kaart}", UriKind.Relative));
-            ImgContainer.Children.Add(image);
-            string waarde = kaart.Split('.')[0].Split("_of_")[1];
+            Image img = new Image();
+            img.MaxHeight = 100;
+            img.MinHeight = 40;
+            img.Source = new BitmapImage(new Uri($"Images/{kaart}", UriKind.Relative));
 
             if (isSpeler == true)
             {
-                if (waarde == "Boer" || waarde == "Dame" || waarde == "Koning")
+                ImgContainerSpeler.Children.Add(img);
+                
+            }
+            else if (isSpeler == false)
+            {
+                ImgContainerBank.Children.Add(img);
+            }
+
+
+            string waarde = kaart.Split("_of_")[0].Split(".png")[0];
+
+            if (isSpeler == true)
+            {
+                if (waarde == "jack" || waarde == "queen" || waarde == "king")
                 {
                     totaalSpeler.Add(10);
                 }
-                else if (waarde == "Aas")
+                else if (waarde == "ace")
                 {
                     totaalSpeler.Add(11);
                 }
@@ -84,28 +95,31 @@ namespace WPL_1_Project_Black_Jack
                     totaalSpeler.Add(int.Parse(waarde));
                 }
                 TxbTotaalSpeler.Text = totaalSpeler.Sum().ToString();
+                nieuwDeck.Remove(kaart);
             }
             if (isSpeler == false)
             {
-                if (waarde == "Boer" || waarde == "Dame" || waarde == "Koning")
+                if (waarde == "jack" || waarde == "queen" || waarde == "king")
                 {
-                    totaalSpeler.Add(10);
+                    totaalBank.Add(10);
                 }
-                else if (waarde == "Aas")
+                else if (waarde == "ace")
                 {
-                    totaalSpeler.Add(11);
+                    totaalBank.Add(11);
                 }
                 else
                 {
                     totaalBank.Add(int.Parse(waarde));
                 }
                 TxbTotaalBank.Text = totaalBank.Sum().ToString();
+                nieuwDeck.Remove(kaart);
+                
             }
-            
+            return isSpeler.ToString();
             
         }
 
-        
+
 
         private async void BtnDeel_Click(object sender, RoutedEventArgs e)
         {
@@ -129,7 +143,7 @@ namespace WPL_1_Project_Black_Jack
                 txbInzet.IsEnabled = true;
 
             }
-            else if (inzet < (int.Parse(txbKapitaal.Text)/100) * 10)
+            else if (inzet < (int.Parse(txbKapitaal.Text) / 100) * 10)
             {
                 MessageBox.Show("Uw inzet moet 10% van het huidige kapitaal zijn! Probeer het opnieuw!");
                 ClearGame();
@@ -143,7 +157,7 @@ namespace WPL_1_Project_Black_Jack
             for (int i = 0; i < AantalKaarten; i++)
             {
 
-                TbxKaartenSpeler.Text += GeefKaart(true);
+                GeefKaart(true);
                 await Task.Delay(1000);
             }
 
@@ -151,14 +165,15 @@ namespace WPL_1_Project_Black_Jack
             for (int i = 0; i < AantalKaarten; i++)
             {
 
-                TbxKaartenBank.Text += GeefKaart(false);
+                GeefKaart(false);
             }
 
         }
 
         private void BtnHit_Click(object sender, RoutedEventArgs e)
         {
-            TbxKaartenSpeler.Text+= GeefKaart(true);
+            GeefKaart(true);
+            BtnDoubleDown.IsEnabled = false;
             if (int.Parse(TxbTotaalSpeler.Text) > 21)
             {
                 TxbResultaat.Text = "Verloren";
@@ -166,6 +181,7 @@ namespace WPL_1_Project_Black_Jack
                 BtnDeel.IsEnabled = true;
                 BtnHit.IsEnabled = false;
                 BtnStand.IsEnabled = false;
+
             }
             else if (int.Parse(TxbTotaalSpeler.Text) > 21 && TxbResultaat.Text.Contains("Aas"))
             {
@@ -179,23 +195,42 @@ namespace WPL_1_Project_Black_Jack
                 BtnHit.IsEnabled = false;
                 BtnStand.IsEnabled = false;
                 txbKapitaal.Text = (int.Parse(txbKapitaal.Text) + (inzet * 2)).ToString();
+
             }
-            
+
         }
 
         private async void BtnStand_Click(object sender, RoutedEventArgs e)
         {
-            
+            ResultaatChecker();
+            BtnDoubleDown.IsEnabled = false;
 
+        }
 
+        private void btnNieuwSpel_Click(object sender, RoutedEventArgs e)
+        {
+            kapitaal = 100;
+            txbKapitaal.Text = kapitaal.ToString();
+            TxbResultaat.Foreground = Brushes.Black;
+            BtnDeel.IsEnabled = true;
+            BtnHit.IsEnabled = false;
+            BtnStand.IsEnabled = false;
+            ClearGame();
+            txbInzet.IsEnabled = true;
+            BtnDoubleDown.IsEnabled = false;
+        }
+
+        
+        private async void ResultaatChecker()
+        {
             while (int.Parse(TxbTotaalBank.Text) <= 17)
             {
-                TbxKaartenBank.Text += GeefKaart(false);
+                GeefKaart(false);
                 await Task.Delay(1000);
 
             }
 
-            
+
             if (int.Parse(TxbTotaalBank.Text) > 21)
             {
                 TxbResultaat.Text = "Gewonnen";
@@ -207,6 +242,10 @@ namespace WPL_1_Project_Black_Jack
                 txbInzet.IsEnabled = true;
 
 
+            }
+            if (int.Parse(TxbTotaalSpeler.Text) > 21 && TxbResultaat.Text.Contains("Aas"))
+            {
+                TxbTotaalSpeler.Text = (int.Parse(TxbTotaalSpeler.Text) - 10).ToString();
             }
             else if (int.Parse(TxbTotaalBank.Text) < int.Parse(TxbTotaalSpeler.Text))
             {
@@ -238,6 +277,15 @@ namespace WPL_1_Project_Black_Jack
                 txbKapitaal.Text = (int.Parse(txbKapitaal.Text) + inzet).ToString();
                 txbInzet.IsEnabled = true;
             }
+            else if (int.Parse(TxbTotaalSpeler.Text) == 21)
+            {
+                TxbResultaat.Text = "Blackjack!";
+                TxbResultaat.Foreground = Brushes.Green;
+                BtnDeel.IsEnabled = true;
+                BtnHit.IsEnabled = false;
+                BtnStand.IsEnabled = false;
+                txbKapitaal.Text = (int.Parse(txbKapitaal.Text) + (inzet * 2)).ToString();
+            }
             else
             {
                 TxbResultaat.Text = "Verloren";
@@ -245,7 +293,7 @@ namespace WPL_1_Project_Black_Jack
                 BtnDeel.IsEnabled = true;
                 BtnHit.IsEnabled = false;
                 BtnStand.IsEnabled = false;
-                txbKapitaal.Text =(int.Parse(txbKapitaal.Text) - inzet).ToString();
+                txbKapitaal.Text = (int.Parse(txbKapitaal.Text) - inzet).ToString();
                 txbInzet.IsEnabled = true;
 
             }
@@ -257,31 +305,18 @@ namespace WPL_1_Project_Black_Jack
                 BtnStand.IsEnabled = false;
                 MessageBox.Show("U kan het spel niet verder spelen! Start een nieuw spel");
             }
-            
         }
 
-        private void btnNieuwSpel_Click(object sender, RoutedEventArgs e)
-        {
-            kapitaal = 100;
-            txbKapitaal.Text = kapitaal.ToString();
-            TxbResultaat.Foreground = Brushes.Black;
-            BtnDeel.IsEnabled = true;
-            BtnHit.IsEnabled = false;
-            BtnStand.IsEnabled = false;
-            ClearGame();
-            txbInzet.IsEnabled = true;
-            
-        }
 
-        private void ClearGame ()
+        private void ClearGame()
         {
             TxbResultaat.Text = "♠ Let's play Blackjack ♣";
-            TbxKaartenSpeler.Text = "";
-            TbxKaartenBank.Text = "";
             totaalBank.Clear();
             totaalSpeler.Clear();
             TxbTotaalBank.Text = "0";
             TxbTotaalSpeler.Text = "0";
+            ImgContainerSpeler.Children.Clear();
+            ImgContainerBank.Children.Clear();
         }
 
         private void BtnDoubleDown_Click(object sender, RoutedEventArgs e)
@@ -293,6 +328,9 @@ namespace WPL_1_Project_Black_Jack
             else
             {
                 txbInzet.Text = (2 * inzet).ToString();
+                GeefKaart(true);
+                BtnHit.IsEnabled = false;
+                ResultaatChecker();
             }
         }
     }
